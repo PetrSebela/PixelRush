@@ -12,8 +12,8 @@ class camera:
 
         self.position = pygame.Vector2(0,0)
         self.camera_offset = Vector2(
-            (self.camera_size[0] / 2 * self.ssf) - self.position.x,
-            (self.camera_size[1] / 2 * self.ssf) + self.position.y
+            (self.camera_size[0] / 2 * self.ssf),
+            (self.camera_size[1] / 2 * self.ssf)
         )
 
         # render stuff
@@ -21,49 +21,15 @@ class camera:
         self.scene = scene
 
 
-    def move_by(self,vector:Vector2):
-        self.position += vector
-        self.update_offsets()
-
-
-    def
-
-
-    def update_offsets(self):
-        self.camera_offset = Vector2(
-            (self.camera_size[0] / 2 * self.ssf) - self.position.x,
-            (self.camera_size[1] / 2 * self.ssf) + self.position.y
-        )
+    def move_to(self, vector:Vector2):
+        self.position = vector
 
 
     def draw_scene(self):
         for layer in self.scene.layers:
-            for tile_position in layer.tile_map:
-                
-                x = tile_position[0] * layer.tile_size + self.camera_offset.x - self.position.x * layer.paralax
-                y = tile_position[1] * layer.tile_size + self.camera_offset.y + self.position.y * layer.paralax
-                
-                
-                self.canvas.blit(
-                    layer.tiles[layer.tile_map[tile_position]],
-                    (x , y)
+            for go in layer.gos:
+                compensated_position = Vector2(
+                    self.position.x,
+                    -self.position.y
                 )
-                
-                if not config.DEBUG:
-                    continue
-
-                pygame.draw.rect(
-                    self.canvas,
-                    (0, 220, 120), 
-                    (   x, 
-                        y, 
-                        layer.tile_size,
-                        layer.tile_size),
-                    1)
-                
-            if not layer.has_player:
-                continue
-
-            for player in self.scene.players:
-                player.render(self.canvas, self.camera_offset)
-            
+                go.render(self.canvas, self.camera_offset, compensated_position)
